@@ -22,12 +22,12 @@ const getUsers = (req, res) => {
 };
 const getUserById = (req, res) => {
   const id = parseInt(req.params.id)
-  pool.query('SELECT * FROM PUBLIC.userprofile WHERE userid=$1', [id], (error, results) => {
+  pool.query('SELECT * FROM PUBLIC.userprofile WHERE id=$1', [id], (error, results) => {
     if (error) { throw error; }
     res.status(200).json(results.rows)
-  });
-  
-};
+  }); 
+   
+}; 
 const createUser = (req, res) => {
   const { firstname, lastname, email } = req.body;
 
@@ -52,7 +52,7 @@ const updateUser = (req, res) => {
 };
 
 const deleteUser = (req, res) => {
-  const id = parseInt(req.params.id)
+  const id = parseInt(req.params.userid)
 
   pool.query('DELETE FROM PUBLIC.userprofile WHERE id = $1', [id], (error, results) => {
     if (error) {
