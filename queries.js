@@ -3,7 +3,7 @@
 
 const Pool = require('pg').Pool
 const dbConfig = require("./app/config/db.config");
-const { res } = require('express');
+const { response } = require('express');
 
 var pool = new Pool({
   host: dbConfig.HOST,
@@ -12,53 +12,58 @@ var pool = new Pool({
   database: dbConfig.DB,
   port: dbConfig.PORT,
 });
-const getUsers = (req, res) => {
+const getUsers = (request, response) => {
   pool.query('SELECT * FROM PUBLIC.userprofile', (error, results) => {
     if (error) {
       throw error;
     }
-    res.status(200).json(results.rows);
+    response.status(200).json(results.rows);
   });
 };
-const getUserById = (req, res) => {
-  const id = parseInt(req.params.id)
+const getUserById = (request, response) => {
+  const id = parseInt(request.params.id)
   pool.query('SELECT * FROM PUBLIC.userprofile WHERE id=$1', [id], (error, results) => {
     if (error) { throw error; }
-    res.status(200).json(results.rows)
+    response.status(200).json(results.rows)
   }); 
    
 }; 
-const createUser = (req, res) => {
-  const { firstname, lastname, email } = req.body;
+const createUser = (request, response) => {
+  const { firstname, lastname, email } = request.body;
+ // var id=request.params.email;
 
-  pool.query('INSERT INTO public.userprofile(firstname, lastname, email) VALUES($1,$2)', [firstname, lastname, email], (error, results) => {
+  pool.query('INSERT INTO public.userprofile(firstname, lastname, email) VALUES($1,$2,$3) RETURNING *', [firstname, lastname, email],
+   (error, results) => {
     if (error) { throw error; }
-    res.status(201).send(`User added with ID: ${result.insertId}`)
+    response.status(201).send(`User added with ID: ${results.rows[0].id}`)
+   // console.log(id);
   });
 };
-const updateUser = (req, res) => {
-  const id = parseInt(req.params.id)
-  const { firstname, lastname, email } = req.body
 
-  pool.query('UPDATE PUBLIC.userprofile SET firstname = $1, lastname=$2, email = $3 WHERE id = $4',
-    [name, lastname, email, id],
+const updateUser = (request, response) => {
+  const id = parseInt(request.params.id)
+  const { firstname, lastname, email } = request.body
+
+
+  pool.query('UPDATE PUBLIC.userprofile SET firstname = $1, lastname= $2, email = $3 WHERE id = $4',
+    [firstname, lastname, email, id],
     (error, results) => {
       if (error) {
         throw error
       }
-      res.status(200).send(`User modified with ID: ${id}`)
+      response.status(200).send(`User modified with ID: ${id}`)
     }
   );
 };
 
-const deleteUser = (req, res) => {
-  const id = parseInt(req.params.userid)
+const deleteUser = (request, response) => {
+  const id = parseInt(request.params.userid)
 
   pool.query('DELETE FROM PUBLIC.userprofile WHERE id = $1', [id], (error, results) => {
     if (error) {
       throw error
     }
-    res.status(200).send(`User deleted with ID: ${id}`)
+    response.status(200).send(`User deleted with ID: ${id}`)
   })
 };
 module.exports = {
