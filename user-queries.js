@@ -1,17 +1,19 @@
 //Databaskopplingen
 //Här skapar vi en pool av databaser
 
-const Pool = require('pg').Pool
-const dbConfig = require("./app/config/db.config");
-const { response } = require('express');
+// const Pool = require('pg').Pool
+// const dbConfig = require("./app/config/db.config");
+// const { response } = require('express');
 
-var pool = new Pool({
-  host: dbConfig.HOST,
-  user: dbConfig.USER,
-  password: dbConfig.PASSWORD,
-  database: dbConfig.DB,
-  port: dbConfig.PORT,
-});
+// var pool = new Pool({
+//   host: dbConfig.HOST,
+//   user: dbConfig.USER, 
+//   password: dbConfig.PASSWORD,
+//   database: dbConfig.DB,
+//   port: dbConfig.PORT,
+// });
+
+const pool = require('./connection-pool');
 const getUsers = (request, response) => {
   pool.query('SELECT * FROM PUBLIC.userprofile', (error, results) => {
     if (error) {
@@ -54,23 +56,26 @@ const updateUser = (request, response) => {
       response.status(200).send(`User modified with ID: ${id}`)
     }
   );
-};
-
+}; 
+//TODO error message if customer has stocks, function in react that checks if stocks are empty
 const deleteUser = (request, response) => {
-  const id = parseInt(request.params.userid)
+  const id = parseInt(request.params.id)
 
   pool.query('DELETE FROM PUBLIC.userprofile WHERE id = $1', [id], (error, results) => {
     if (error) {
+      alert('Du måste sälja dina aktier innan du kan radera din profil');
       throw error
+    } else {
+      response.status(200).send(`User deleted with ID: ${id}`)
     }
-    response.status(200).send(`User deleted with ID: ${id}`)
+    
   })
 };
 module.exports = {
   getUsers,
   getUserById,
   createUser,
-  updateUser,
+  updateUser, 
   deleteUser,
 };
 
