@@ -103,6 +103,39 @@ const updatePassword = (request, response) => {
 
 }
 //for settings/preferences
+const addPreference = (request, response) => {
+  
+  const {catid, userid} = request.body;
+  pool.query('INSERT INTO public.userprefs(catid, userid) VALUES($1, $2) RETURNING *', [catid, userid], (error, results) => {
+    if(error) {
+      throw error
+    } else {
+      response.status(201).send(`Preference added with catid: ${results.rows[0].catid}`)
+    }
+  }) 
+}
+
+//for settings/preferences
+const removePreference = (request, response) => {
+  
+  const {catid} = request.body;
+  pool.query('DELETE FROM public.userprefs WHERE catid = $1', [catid], (error, results) => {
+    if(error) {
+      throw error
+    } else {
+      response.status(200).send(`Preference deleted with catid: ${catid}`)
+    }
+  })
+};
+
+const getPreferences = (request, response) => {
+  pool.query('SELECT * FROM PUBLIC.userprefs', (error, results) => {
+    if (error) {
+      throw error;
+    }
+    response.status(200).json(results.rows);
+  });
+};
 
 //TODO error message if customer has stocks, function in react that checks if stocks are empty
 const deleteUser = (request, response) => {
@@ -123,6 +156,9 @@ module.exports = {
   getUserById,
   createUser,
   updateUser,
+  addPreference, 
+  removePreference,
+  getPreferences,
   deleteUser,
   updatePassword,
 };
