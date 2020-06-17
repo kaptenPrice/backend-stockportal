@@ -20,7 +20,8 @@ app.get('/', (request, response) => {
 app.get('/users',userdb.getUsers);
 app.get('/users/:id',userdb.getUserById);
 app.post('/users',userdb.createUser);
-app.put('/users/:id',userdb.updateUser);
+// app.put('/users/:id',userdb.updateUser);
+app.put('/users/:id',userdb.updatePassword);
 app.delete('/users/:id',userdb.deleteUser);
 
 app.get('/portfolio',portfoliodb.getPortfolio);
