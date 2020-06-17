@@ -14,6 +14,9 @@
 // });
 
 const pool = require('./connection-pool');
+const bcrypt = require("bcrypt");
+const SALT_ROUNDS = 10;
+
 const getUsers = (request, response) => {
   pool.query('SELECT * FROM PUBLIC.userprofile', (error, results) => {
     if (error) {
@@ -29,26 +32,27 @@ const getUserById = (request, response) => {
     response.status(200).json(results.rows)
   }); 
    
-}; 
+};   
+ 
 const createUser = (request, response) => {
-  const { firstname, lastname, email } = request.body;
- // var id=request.params.email;
-
-  pool.query('INSERT INTO public.userprofile(firstname, lastname, email) VALUES($1,$2,$3) RETURNING *', [firstname, lastname, email],
-   (error, results) => {
-    if (error) { throw error; }
-    response.status(201).send(`User added with ID: ${results.rows[0].id}`)
-   // console.log(id);
-  });
+  const { email, password } = request.body;
+  bcrypt.hash(password, SALT_ROUNDS, (err, hash) => {
+   
+    pool.query('INSERT INTO public.userprofile(email, password) VALUES($1,$2) RETURNING *', [email, hash],
+    (error, results) => {
+     if (error) { throw error; } 
+     response.status(201).send(`User added with email: ${results.rows[0].email}`)
+   });
+  })
 };
 
+//for settings/my profile
 const updateUser = (request, response) => {
   const id = parseInt(request.params.id)
-  const { firstname, lastname, email } = request.body
+  const { firstname, lastname, socnumber, address, zipcode, city, email, phone, imageURL} = request.body
 
-
-  pool.query('UPDATE PUBLIC.userprofile SET firstname = $1, lastname= $2, email = $3 WHERE id = $4',
-    [firstname, lastname, email, id],
+  pool.query('UPDATE PUBLIC.userprofile SET firstname = $1, lastname= $2, email = $3, socnumber = $4, address = $5, zipcode = $6, city=$7, phone=$8, imageURL = $9 WHERE id = $10',
+    [firstname, lastname, email, socnumber, address, zipcode, city, phone, imageURL, id],
     (error, results) => {
       if (error) {
         throw error
@@ -57,6 +61,39 @@ const updateUser = (request, response) => {
     }
   );
 }; 
+
+//for settings/password
+const updatePassword = (request, response) => {
+  const id = parseInt(request.params.id)
+  const { password } = request.body
+  pool.query('SELECT * FROM public.userprofile WHERE id=$1', [id], (err, res) => {
+    if (err) {
+      console.log("error: ", err);
+      result(err, null);
+      return;
+    }
+    if (res.length) {
+      bcrypt.compare(password, res[0].hash, (err, isCorrect) => {
+        if (isCorrect) {
+          pool.query(`UPDATE public.userprofile SET passwordsalt = $1 WHERE public.userprofile = id$;`,
+          [id],
+          )
+          result(null, res[0]);
+          return;
+          } else {
+          console.log("Incorrect password");
+          result({ type: "incorrect_password" }, null);
+          return;
+        }
+      });
+    } else {
+      result({ type: "not_found" }, null);
+    }
+  });
+ 
+}
+//for settings/preferences
+
 //TODO error message if customer has stocks, function in react that checks if stocks are empty
 const deleteUser = (request, response) => {
   const id = parseInt(request.params.id)
