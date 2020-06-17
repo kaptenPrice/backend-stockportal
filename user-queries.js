@@ -45,7 +45,6 @@ const createUser = (request, response) => {
       });
   })
 };
-
 //for settings/my profile
 const updateUser = (request, response) => {
   const id = parseInt(request.params.id)
@@ -61,45 +60,51 @@ const updateUser = (request, response) => {
     }
   );
 };
-
 //for settings/password
 const updatePassword = (request, response) => {
   const id = parseInt(request.params.id)
   const { password, newPassword } = request.body;
   pool.query('SELECT * FROM PUBLIC.userprofile WHERE id=$1', [id], (err, res) => {
     if (err) {
-      console.log("DBERROR :"+err.message)
+      console.log("DBERROR :" + err.message)
       response.status(500).send(err, null);
-      return; 
+      return;
     }
     console.log("Jag klaarade första ifen")
-    console.log("resValue: "+res.rows[0].email)
-    
+    // console.log("resValue: " + res.rows[0].email)
+
     if (res.rows.length > 0) {
       console.log("Vi är inne i ifen")
       // console.log('password-----',res.rows[0].password);
       bcrypt.compare(password, res.rows[0].password, (err, isCorrect) => {
-         
-        if (isCorrect) {
-          //     const {password}= request.body;
-          bcrypt.hash(newPassword, SALT_ROUNDS, (err, hash) => {
-            pool.query(`UPDATE public.userprofile SET password = $2 WHERE public.userprofile = id$1;`,
-              [id, newPassword]);
 
-            response.status(201).send(`PassWord modified with ID: ${id}`);
-            // result(null, res[0]);         
+        if (isCorrect) {
+
+          bcrypt.hash(newPassword, SALT_ROUNDS, (err, hash) => {
+            
+            console.log("")
+            try {
+              pool.query(`UPDATE public.userprofile SET password = $2 WHERE id=$1;`,
+                [id, hash]);
+
+              response.status(201).send(`PassWord modified with ID: ${id}`);
+            }
+            catch{
+              response.status(500).json(newPassword, "didnt work")
+            }
+
             return;
           })
 
         } else {
-         // throw err
-         console.log("Nån jävla error")
+          // throw err
+          console.log("Nån jävla error")
           return;
         }
       });
     } else {
       console.log("Nån annana jävla err")
-     // throw err
+      // throw err
     }
   });
 

@@ -17,11 +17,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.get('/', (request, response) => {
   response.json({ info: 'Node.js, Express, and Postgres API' })
 })
-//app.get('/users',userdb.getUsers);
-//app.get('/users/:id',userdb.getUserById);
-app.post('/users',userdb.createUser);
-// app.put('/users/:id',userdb.updateUser);
-app.put('/users/:id',userdb.updatePassword);
+app.get('/users',userdb.getUsers);
+app.get('/users/:id',userdb.getUserById);
+app.post('/newuser',userdb.createUser);
+ app.put('/users/:id',userdb.updateUser);
+app.put('/userpass/:id',userdb.updatePassword);
 app.delete('/users/:id',userdb.deleteUser);
 
 app.get('/portfolio',portfoliodb.getPortfolio);
