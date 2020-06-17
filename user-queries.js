@@ -65,22 +65,21 @@ const updateUser = (request, response) => {
 //for settings/password
 const updatePassword = (request, response) => {
   const id = parseInt(request.params.id)
-  console.log("error: ", id);
-
   const { password, newPassword } = request.body;
-  pool.query('SELECT password FROM public.userprofile WHERE id=$1', [id], (err, res) => {
-
+  pool.query('SELECT * FROM PUBLIC.userprofile WHERE id=$1', [id], (err, res) => {
     if (err) {
-      console.log("error: ", err);
-      result(err, null);
-      return;
+      console.log("DBERROR :"+err.message)
+      response.status(500).send(err, null);
+      return; 
     }
     console.log("Jag klaarade första ifen")
-    if (res.length>0) {
+    console.log("resValue: "+res.rows[0].email)
+    
+    if (res.rows.length > 0) {
       console.log("Vi är inne i ifen")
-
-      bcrypt.compare(password, res[0].hash, (err, isCorrect) => {
-
+      // console.log('password-----',res.rows[0].password);
+      bcrypt.compare(password, res.rows[0].password, (err, isCorrect) => {
+         
         if (isCorrect) {
           //     const {password}= request.body;
           bcrypt.hash(newPassword, SALT_ROUNDS, (err, hash) => {
