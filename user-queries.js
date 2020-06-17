@@ -63,26 +63,20 @@ const updateUser = (request, response) => {
 //for settings/password
 const updatePassword = (request, response) => {
   const id = parseInt(request.params.id)
-  const { password, newPassword } = request.body;
+  const { password, newPaspword } = request.body;
   pool.query('SELECT * FROM PUBLIC.userprofile WHERE id=$1', [id], (err, res) => {
     if (err) {
-      console.log("DBERROR :" + err.message)
       response.status(500).send(err, null);
       return;
     }
-    console.log("Jag klaarade första ifen")
-    // console.log("resValue: " + res.rows[0].email)
 
     if (res.rows.length > 0) {
-      console.log("Vi är inne i ifen")
-      // console.log('password-----',res.rows[0].password);
       bcrypt.compare(password, res.rows[0].password, (err, isCorrect) => {
 
         if (isCorrect) {
 
-          bcrypt.hash(newPassword, SALT_ROUNDS, (err, hash) => {
-            
-            console.log("")
+          bcrypt.hash(newpassword, SALT_ROUNDS, (err, hash) => {
+
             try {
               pool.query(`UPDATE public.userprofile SET password = $2 WHERE id=$1;`,
                 [id, hash]);
@@ -90,21 +84,20 @@ const updatePassword = (request, response) => {
               response.status(201).send(`PassWord modified with ID: ${id}`);
             }
             catch{
-              response.status(500).json(newPassword, "didnt work")
+              response.status(500).json(newpassword, "didnt work")
             }
 
             return;
           })
 
         } else {
-          // throw err
-          console.log("Nån jävla error")
+          response.status(500).json(err,"Password didnt match , try again ")
+
           return;
         }
       });
     } else {
-      console.log("Nån annana jävla err")
-      // throw err
+      response.status(500).json(err,"Could find user with id: ",id)
     }
   });
 
