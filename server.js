@@ -23,9 +23,7 @@ app.post('/newuser',userdb.createUser);
 app.put('/users/:id',userdb.updateUser);
 app.put('/userpass/:id',userdb.updatePassword);
 app.delete('/users/:id',userdb.deleteUser);
-app.post('/preference',userdb.addPreference);
-app.delete('/preference', userdb.removePreference);
-app.get('/preference', userdb.getPreferences);
+
 app.get('/portfolio',portfoliodb.getPortfolio);
 
 //require("./app/routes/customer.routes")(app);
