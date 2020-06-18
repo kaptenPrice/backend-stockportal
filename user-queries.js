@@ -105,6 +105,7 @@ const updatePassword = (request, response) => {
 //for settings/preferences
 
 //TODO error message if customer has stocks, function in react that checks if stocks are empty
+//FOR SETTINGS MYPROFILE
 const deleteUser = (request, response) => {
   const id = parseInt(request.params.id)
 
@@ -127,4 +128,3 @@ module.exports = {
   updatePassword,
 };
 
-// module.exports = connection;
