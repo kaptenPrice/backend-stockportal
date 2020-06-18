@@ -27,6 +27,7 @@ app.post('/preference',userdb.addPreference);
 app.delete('/preference', userdb.removePreference);
 app.get('/preference', userdb.getPreferences);
 app.get('/portfolio',portfoliodb.getPortfolio);
+app.get("")
 
 //require("./app/routes/customer.routes")(app);
 
