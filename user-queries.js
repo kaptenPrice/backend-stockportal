@@ -128,8 +128,9 @@ const removePreference = (request, response) => {
   })
 };
 
+// for dashboard/preferred industries
 const getPreferences = (request, response) => {
-  pool.query('SELECT * FROM PUBLIC.userprefs', (error, results) => {
+  pool.query('SELECT userprefs.userid, category.catname FROM PUBLIC.userprefs JOIN category ON userprefs.catid=category.catid', (error, results) => {
     if (error) {
       throw error;
     }
