@@ -25,6 +25,7 @@ app.put('/userpass/:id',userdb.updatePassword);
 app.delete('/users/:id',userdb.deleteUser);
 
 app.get('/portfolio',portfoliodb.getPortfolio);
+app.get("")
 
 //require("./app/routes/customer.routes")(app);
 
