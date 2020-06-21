@@ -18,7 +18,7 @@ const bcrypt = require("bcrypt");
 const SALT_ROUNDS = 10;
 
 const getUsers = (request, response) => {
-  pool.query('SELECT * FROM PUBLIC.userprofile', (error, results) => {
+  pool.query('SELECT * FROM PUBLIC.users', (error, results) => {
     if (error) {
       throw error;
     }
@@ -27,7 +27,7 @@ const getUsers = (request, response) => {
 };
 const getUserById = (request, response) => {
   const id = parseInt(request.params.id)
-  pool.query('SELECT * FROM PUBLIC.userprofile WHERE id=$1', [id], (error, results) => {
+  pool.query('SELECT * FROM PUBLIC.users WHERE id=$1', [id], (error, results) => {
     if (error) { throw error; }
     response.status(200).json(results.rows)
   });
@@ -38,7 +38,7 @@ const createUser = (request, response) => {
   const { email, password } = request.body;
   bcrypt.hash(password, SALT_ROUNDS, (err, hash) => {
 
-    pool.query('INSERT INTO public.userprofile(email, password) VALUES($1,$2) RETURNING *', [email, hash],
+    pool.query('INSERT INTO public.users(email, password) VALUES($1,$2) RETURNING *', [email, hash],
       (error, results) => {
         if (error) { throw error; }
         response.status(201).send(`User added with email: ${results.rows[0].email}`)
@@ -50,7 +50,7 @@ const updateUser = (request, response) => {
   const id = parseInt(request.params.id)
   const { firstname, lastname, socnumber, address, zipcode, city, email, phone, imageURL } = request.body
 
-  pool.query('UPDATE PUBLIC.userprofile SET firstname = $1, lastname= $2, email = $3, socnumber = $4, address = $5, zipcode = $6, city=$7, phone=$8, imageURL = $9 WHERE id = $10',
+  pool.query('UPDATE PUBLIC.users SET firstname = $1, lastname= $2, email = $3, socnumber = $4, address = $5, zipcode = $6, city=$7, phone=$8, imageURL = $9 WHERE id = $10',
     [firstname, lastname, email, socnumber, address, zipcode, city, phone, imageURL, id],
     (error, results) => {
       if (error) {
@@ -64,7 +64,7 @@ const updateUser = (request, response) => {
 const updatePassword = (request, response) => {
   const id = parseInt(request.params.id)
   const { password, newPaspword } = request.body;
-  pool.query('SELECT * FROM PUBLIC.userprofile WHERE id=$1', [id], (err, res) => {
+  pool.query('SELECT * FROM PUBLIC.users WHERE id=$1', [id], (err, res) => {
     if (err) {
       response.status(500).send(err, null);
       return;
@@ -78,7 +78,7 @@ const updatePassword = (request, response) => {
           bcrypt.hash(newpassword, SALT_ROUNDS, (err, hash) => {
 
             try {
-              pool.query(`UPDATE public.userprofile SET password = $2 WHERE id=$1;`,
+              pool.query(`UPDATE public.users SET password = $2 WHERE id=$1;`,
                 [id, hash]);
 
               response.status(201).send(`PassWord modified with ID: ${id}`);
@@ -130,7 +130,7 @@ const removePreference = (request, response) => {
 
 // for dashboard/preferred industries
 const getPreferences = (request, response) => {
-  pool.query('SELECT userprefs.userid, category.catname FROM PUBLIC.userprefs JOIN category ON userprefs.catid=category.catid', (error, results) => {
+  pool.query('SELECT userprefs.userid, categories.catname FROM PUBLIC.userprefs JOIN categories ON userprefs.catid=categories.catid', (error, results) => {
     if (error) {
       throw error;
     }
@@ -143,7 +143,7 @@ const getPreferences = (request, response) => {
 const deleteUser = (request, response) => {
   const id = parseInt(request.params.id)
 
-  pool.query('DELETE FROM PUBLIC.userprofile WHERE id = $1', [id], (error, results) => {
+  pool.query('DELETE FROM PUBLIC.users WHERE id = $1', [id], (error, results) => {
     if (error) {
       alert('Du måste sälja dina aktier innan du kan radera din profil');
       throw error
