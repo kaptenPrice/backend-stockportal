@@ -1,12 +1,7 @@
-//Server filen är initial entry. Som vår index.js i React
-// Här initierar vi en app via express som låter oss skapa vårt REST-API
-// Vi slänger även in bodyParser för att säga vi vill jobba med JSON
-// Sedan starta vi upp servern att den lyssnar på en port
-// Slutgiltigen skickar vi över app instansen till routes.
 
 const express = require("express");
 const bodyParser = require("body-parser");
-const PORT = process.env.PORT || 3002;
+const PORT = process.env.PORT || 3000;
 const app = express();
 const userdb = require('./user-queries');
 const portfoliodb = require('./portfolio-queries')
