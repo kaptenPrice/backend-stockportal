@@ -23,7 +23,7 @@ app.delete('/preference', userdb.removePreference);
 app.get('/preference', userdb.getPreferences);
 app.get('/portfolio',portfoliodb.getPortfolio);
 
-//require("./app/routes/customer.routes")(app);
+require("./app/routes/customer.routes")(app);
 
 app.listen(PORT, () => {
   console.log("Server is running on port " + PORT);

@@ -6,6 +6,7 @@
 module.exports = (app) => {
   //Retrieve all customers
   const customers = require("../controllers/customer.controller");
-
   app.get("/customers", customers.findAll);
+  app.post("/create", customers.create);
+  app.post("/login", customers.login);
 };
