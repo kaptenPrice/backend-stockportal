@@ -64,15 +64,15 @@ const updateImage = (request, response) => {
 //for settings/my profile
 const updateUser = (request, response) => {
   const id = parseInt(request.params.id)
-  const { firstname, lastname, socnumber, adress, zipcode, city, email, phone, imageURL } = request.body
-
+  const { firstName, lastname, socnumber, adress, zipcode, city, email, phone, imageURL } = request.body
+console.log(request.body)
   pool.query('UPDATE users SET firstname = $1, lastname= $2, email = $3, socnumber = $4, adress = $5, zipcode = $6, city=$7, phone=$8, image=$9 WHERE id=$10',
-    [firstname, lastname, email, socnumber, adress, zipcode, city, phone, imageURL, id],
+    [firstName, lastname, email, socnumber, adress, zipcode, city, phone, imageURL, id],
     (error, results) => {
       if (error) {
         throw error
       }
-      response.status(201).send(`User modified with ID: ${id}`)
+      response.status(201).send({message:`User modified with ID: ${id}`})
     }
   );
 };
