@@ -41,18 +41,6 @@ exports.getProfileInfo = (req, res) => {
   });
 };
 
-/*
-{
-  firstname = data.firstname,
-  lastname = data.lastname,
-  email = data.email,
-  adress = data.adress,
-  zipcode = data.zipcode,
-  city = data.city,
-  phone = data.phone,
-  socnumber = data.socnumber,
-  imageURL = data.imageURL } */
-
 exports.create = (req, res) => {
   if (!req.body) {
     res.status(400).send({
@@ -78,6 +66,87 @@ exports.create = (req, res) => {
   });
 };
 
+exports.updateUserInfo = (req, res) => {
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!",
+    });
+    return;
+  }
+  if (!req.body.id_token) {
+    res.status(400).send({
+      message: "Token can not be empty!",
+    });
+    return;
+  }
+
+  const id_token = req.body.id_token;
+  const user = new Customer({
+    firstname : req.body.firstname,
+    lastname : req.body.lastname,
+    email : req.body.email,
+    adress : req.body.adress,
+    zipcode : req.body.zipcode,
+    city : req.body.city,
+    phone : req.body.phone,
+    socnumber : req.body.socnumber,
+    imageurl : req.body.imageurl,
+  });
+
+  console.log(res.user)
+
+  Customer.updateUserInfo(id_token, user, (err, data) => {
+    if (err) {
+      res.status(500).send({
+        message: err.message || "Some occur while editing profile",
+      });
+    } else {
+      res.send(data);
+    }
+  });
+};
+
+
+exports.updatePassword = (req, res) => {
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!",
+    });
+    return;
+  }
+  if (!req.body.id_token) {
+    res.status(400).send({
+      message: "Token can not be empty!",
+    });
+    return;
+  }
+
+  if (!req.body.old_password || !req.body.new_password) {
+    res.status(400).send({
+      message: "password can not be empty!",
+    });
+    return;
+  }
+
+  const id_token = req.body.id_token;
+  const new_password = req.body.new_password;
+  const old_password = req.body.old_password;
+
+  console.log(res.user)
+
+  Customer.updatePassword(id_token, new_password, old_password, (err, data) => {
+    if (err) {
+      res.status(500).send({
+        message: err.message || "Some occur while changing password",
+      });
+    } else {
+      res.send(data);
+    }
+  });
+};
+
+
+
 exports.login = (req, res) => {
   const user = new Customer({
     email: req.body.email,
@@ -100,3 +169,29 @@ exports.login = (req, res) => {
     }
   }); 
 };
+
+exports.getPreferencesInfo = (req, res) => {
+  console.log(req.body.id_token + " is the token");
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!",
+    });
+    return;
+  }
+  if (!req.body.id_token) {
+    res.status(400).send({
+      message: "Token can not be empty!",
+    });
+    return;
+  }
+  Customer.getPreferencesInfo(req.body.id_token, (err, data) => {
+    if (err) {
+      res.status(500).send({
+        message: "Error when fetching preferences...",
+      });
+    } else {
+      res.send(data);
+    }
+  });
+};
+

@@ -10,4 +10,7 @@ module.exports = (app) => {
   app.post("/create", customers.create);
   app.post("/login", customers.login);
   app.post("/getProfileInfo", customers.getProfileInfo);
+  app.post("/getPreferencesInfo", customers.getPreferencesInfo);
+  app.post("/updateUserInfo", customers.updateUserInfo);
+  app.post("/updatePassword", customers.updatePassword);
 };
