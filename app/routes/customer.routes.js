@@ -9,4 +9,5 @@ module.exports = (app) => {
   app.get("/customers", customers.findAll);
   app.post("/create", customers.create);
   app.post("/login", customers.login);
+  app.post("/getProfileInfo", customers.getProfileInfo);
 };

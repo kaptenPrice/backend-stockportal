@@ -10,5 +10,5 @@ exports.createIDToken = (userID) => {
 exports.deCodeIdToken = (token) => {
   var decoded = jwt.verify(token, secret);
   console.log(decoded.data)
-  return decoded;
+  return decoded.data;
 };

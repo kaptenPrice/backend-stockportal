@@ -23,7 +23,6 @@ const Customer = function (customer) {
   this.imageURL = customer.imageURL;
 };
 
-
 Customer.getAll = (result) => {
   sql.query("SELECT * FROM users", (err, res) => {
     if (err) {
@@ -84,6 +83,24 @@ Customer.login = (user, result) => {
     } else {
       result({ type: "not_found" }, null);
     }
+  });
+};
+
+Customer.getProfileInfo = (token, result) => {
+  const userId = deCodeIdToken(token);
+  console.log(userId + " is the userid");
+
+  sql.query(`SELECT firstname,lastname,email,adress,zipcode,city,phone,socnumber,imageurl from users WHERE userid = '${userId}'`, (err, res) => {
+    if (err) {
+      console.log("error: No user found ", err);
+      result(err, null);
+      return;
+    }
+    if (res.rows.length) {
+
+      result(null, res.rows[0]);
+    }
+    
   });
 };
 

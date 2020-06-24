@@ -16,6 +16,43 @@ exports.findAll = (req, res) => {
   });
 };
 
+exports.getProfileInfo = (req, res) => {
+  console.log(req.body.id_token + " is the token");
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!",
+    });
+    return;
+  }
+  if (!req.body.id_token) {
+    res.status(400).send({
+      message: "Token can not be empty!",
+    });
+    return;
+  }
+  Customer.getProfileInfo(req.body.id_token, (err, data) => {
+    if (err) {
+      res.status(500).send({
+        message: "Error when fetching user...",
+      });
+    } else {
+      res.send(data);
+    }
+  });
+};
+
+/*
+{
+  firstname = data.firstname,
+  lastname = data.lastname,
+  email = data.email,
+  adress = data.adress,
+  zipcode = data.zipcode,
+  city = data.city,
+  phone = data.phone,
+  socnumber = data.socnumber,
+  imageURL = data.imageURL } */
+
 exports.create = (req, res) => {
   if (!req.body) {
     res.status(400).send({
@@ -55,7 +92,7 @@ exports.login = (req, res) => {
         });
       } else {
         res.status(500).send({
-          message: "Error when fething user...",
+          message: "Error when fetching user...",
         });
       }
     } else {
