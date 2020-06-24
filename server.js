@@ -2,21 +2,21 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3000;
-const userdb = require('./user-queries');
-const portfoliodb = require('./portfolio-queries');
-const fileUpload = require("express-fileupload");
-const cors=require('cors');
+//const userdb = require('./user-queries');
+//const portfoliodb = require('./portfolio-queries');
+//const fileUpload = require("express-fileupload");
+//const cors=require('cors');
 const app = express();
-const pool = require('./connection-pool');
+//const pool = require('./connection-pool');
 
 
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(fileUpload({
+/*app.use(fileUpload({
   createParentPath: true
 }));
-app.use(cors());
+app.use(cors()); */
 
 /*app.get('/', (request, response) => {
   response.json({ info: 'Node.js, Express, and Postgres API' })
