@@ -15,7 +15,14 @@
 
 const pool = require('./connection-pool');
 const bcrypt = require("bcrypt");
+const { request, response } = require('express');
+const fileUpload = require('express-fileupload');
+
+
+
+
 const SALT_ROUNDS = 10;
+
 
 const getUsers = (request, response) => {
   pool.query('SELECT * FROM PUBLIC.users', (error, results) => {
@@ -45,6 +52,15 @@ const createUser = (request, response) => {
       });
   })
 };
+const updateImage = (request, response) => {
+  const id = parseInt(request.params.id);
+  const { image } = request.body;
+  pool.query('UPDATE users SET image= $1 where id=$2',
+    [image, id], (error, results) => {
+      if (error) { throw error }
+      response.status(201).send(`user modified with ID: ${id}`)
+    });
+};
 //for settings/my profile
 const updateUser = (request, response) => {
   const id = parseInt(request.params.id)
@@ -56,7 +72,7 @@ const updateUser = (request, response) => {
       if (error) {
         throw error
       }
-      response.status(200).send(`User modified with ID: ${id}`)
+      response.status(201).send(`User modified with ID: ${id}`)
     }
   );
 };
@@ -91,36 +107,36 @@ const updatePassword = (request, response) => {
           })
 
         } else {
-          response.status(500).json(err,"Password didnt match , try again ")
+          response.status(500).json(err, "Password didnt match , try again ")
 
           return;
         }
       });
     } else {
-      response.status(500).json(err,"Could find user with id: ",id)
+      response.status(500).json(err, "Could find user with id: ", id)
     }
   });
 
 }
 //for settings/preferences
 const addPreference = (request, response) => {
-  
-  const {catid, userid} = request.body;
+
+  const { catid, userid } = request.body;
   pool.query('INSERT INTO public.userprefs(catid, userid) VALUES($1, $2) RETURNING *', [catid, userid], (error, results) => {
-    if(error) {
+    if (error) {
       throw error
     } else {
       response.status(201).send(`Preference added with catid: ${results.rows[0].catid}`)
     }
-  }) 
+  })
 }
 
 //for settings/preferences
 const removePreference = (request, response) => {
-  
-  const {catid} = request.body;
+
+  const { catid } = request.body;
   pool.query('DELETE FROM public.userprefs WHERE catid = $1', [catid], (error, results) => {
-    if(error) {
+    if (error) {
       throw error
     } else {
       response.status(200).send(`Preference deleted with catid: ${catid}`)
@@ -153,15 +169,43 @@ const deleteUser = (request, response) => {
 
   })
 };
+
+// const imageUpload = async (req, res) => {
+//   try{
+//     if(!req.files){
+//       res.send({
+//         status: false,
+//         message: 'No file upploaded'
+//       });
+//     }else{
+//       let avatar=req.files.avatar;
+//       profileImage.mv('./images'+avatar.name);
+//       res.send({
+//         status: true,
+//         message: 'File is uploaded',
+//         data: {
+//           name: avatar.name,
+//           mimetype: avatar.mimetype,
+//           size: avatar.size
+//         }
+//       });
+//     }
+//   }catch(err){
+//     res.status(500).send(err)
+//   }
+
+// };
 module.exports = {
   getUsers,
   getUserById,
   createUser,
   updateUser,
-  addPreference, 
+  addPreference,
   removePreference,
   getPreferences,
   deleteUser,
   updatePassword,
+  // imageUpload,
+
 };
 
