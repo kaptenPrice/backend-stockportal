@@ -5,7 +5,7 @@
 
 const sql = require('../../connection-pool');
 const bcrypt = require("bcrypt");
-const util = require("../utility");
+const { createIDToken, deCodeIdToken } = require("../utility");
 const SALT_ROUNDS = 10;
 
 const Customer = function (customer) {
@@ -38,12 +38,11 @@ Customer.getAll = (result) => {
 
 Customer.create = (newUser, result) => {
   bcrypt.hash(newUser.password, SALT_ROUNDS, (err, hash) => {
-    console.log(hash);
     const objUser = {
       email: newUser.email,
-      hash: hash,
+      password: hash,
     };
-    sql.query("INSERT INTO public.users SET ?", objUser, (err, res) => {
+    sql.query("INSERT INTO users(email, password) VALUES($1,$2)", [newUser.email, hash], (err, res) => {
       if (err) {
         console.log("error", err);
         result(err, null);
@@ -59,18 +58,22 @@ Customer.create = (newUser, result) => {
 Customer.login = (user, result) => {
   const { email, password } = user;
 
-  sql.query(`SELECT * from customers WHERE email = '${email}'`, (err, res) => {
+  console.log(email);
+
+  sql.query(`SELECT * from users WHERE email = '${email}'`, (err, res) => {
     if (err) {
-      console.log("error: ", err);
+      console.log("error: No user found ", err);
       result(err, null);
       return;
     }
-
-    if (res.length) {
-      bcrypt.compare(password, res[0].hash, (err, isCorrect) => {
+    console.log(res.rows.length);
+    if (res.rows.length) {
+      console.log("found user, checking pass");
+      bcrypt.compare(password, res.rows[0].password, (err, isCorrect) => {
         if (isCorrect) {
-          console.log("Found user", res[0]);
-          result(null, {id_token: util.createIDToken(email)});
+          console.log("Pass correct");
+          console.log("Found user", res.rows[0]);
+          result(null, {id_token: createIDToken(res.rows[0].userid)});
           return;
         } else {
           console.log("Incorrect password");

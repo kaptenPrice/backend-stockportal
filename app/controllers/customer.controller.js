@@ -25,9 +25,10 @@ exports.create = (req, res) => {
 
   const user = new Customer({
     email: req.body.email,
-    name: req.body.name,
     password: req.body.password,
   });
+
+  console.log(res.body)
 
   Customer.create(user, (err, data) => {
     if (err) {
@@ -43,11 +44,10 @@ exports.create = (req, res) => {
 exports.login = (req, res) => {
   const user = new Customer({
     email: req.body.email,
-    password: req.body.password,
-    id_token: createIDToken(req.body.email),
+    password: req.body.password
   });
-  deCodeIdToken(user.id_token);
-  /*Customer.login(user, (err, data) => {
+  
+  Customer.login(user, (err, data) => {
     if (err) {
       if (err.type === "not_found" || err.type === "incorrect_password") {
         res.status(404).send({
@@ -61,6 +61,5 @@ exports.login = (req, res) => {
     } else {
       res.send(data);
     }
-  }); */
-  res.send(user);
+  }); 
 };
