@@ -39,7 +39,7 @@ app.post('/upload-image/:id', async (req, res) => {
     } else {
       let profileImage = req.files.profilpic; //profilpic är namnet på inputField
 
-      profileImage.mv(`./images/${id}` + profileImage.name);
+      profileImage.mv(`./uploads/${id}` + profileImage.name);
       res.send({
         status: true,
         message: 'File is uploaded',
