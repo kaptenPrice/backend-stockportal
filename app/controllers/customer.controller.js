@@ -145,6 +145,29 @@ exports.updatePassword = (req, res) => {
   });
 };
 
+exports.lostPassword = (req, res) => {
+  const user = new Customer({
+    email: req.body.email,
+    secretword: req.body.secretword
+  });
+  
+  Customer.lostPassword(user, (err, data) => {
+    if (err) {
+      if (err.type === "not_found" || err.type === "incorrect_secret") {
+        res.status(404).send({
+          message: "Wrong email or secret",
+        });
+      } else {
+        res.status(500).send({
+          message: "Error when fetching user...",
+        });
+      }
+    } else {
+      res.send(data);
+    }
+  }); 
+};
+
 exports.login = (req, res) => {
   const user = new Customer({
     email: req.body.email,

@@ -64,17 +64,57 @@ Customer.updateUserInfo = (id_token, userSettings, result) => {
 };
 
 Customer.create = (newUser, result) => {
-  bcrypt.hash(newUser.password, SALT_ROUNDS, (err, hash) => {
-    sql.query("INSERT INTO users(email, password, secretword) VALUES($1,$2,$3)", [newUser.email, hash, newUser.secretword], (err, res) => {
-      if (err) {
-        console.log("error", err);
-        result(err, null);
-        return;
-      }
+  bcrypt.hash(newUser.password, SALT_ROUNDS, (err, passHash) => {
+    bcrypt.hash(newUser.secretword, SALT_ROUNDS, (err, secretHash) => {
+      sql.query("INSERT INTO users(email, password, secretword) VALUES($1,$2,$3)", [newUser.email, passHash, secretHash], (err, res) => {
+        if (err) {
+          console.log("error", err);
+          result(err, null);
+          return;
+        }
 
-      console.log("Created user", { id: res.insertId, ...newUser });
-      result(null, { sucess: true });
+        console.log("Created user", { id: res.insertId, ...newUser });
+        result(null, { sucess: true });
+      });
     });
+  });
+};
+
+Customer.lostPassword = (user, result) => {
+  const { email, secretword } = user;
+
+  sql.query(`SELECT * from users WHERE email = '${email}'`, (err, res) => {
+    if (err) {
+      console.log("error: No user found ", err);
+      result(err, null);
+      return;
+    }
+    console.log(res.rows.length);
+    if (res.rows.length) {
+      console.log("found user, checking secret");
+
+      bcrypt.compare(secretword, res.rows[0].secretword, (err, isCorrect) => {
+        if (isCorrect) { 
+          console.log("Secret correct");
+          sql.query(`UPDATE users SET password = '${res.rows[0].secretword}' WHERE email = '${email}'`, (err, res) => {
+            if (err) {
+              console.log("error", err);
+              result(err, null);
+              return;
+            }
+        
+            console.log("updated password to secret");
+            result(null, { sucess: true });
+          });
+        } else {
+          console.log("Incorrect secret");
+          result({ type: "incorrect_secret" }, null);
+          return;
+        }
+      });
+    } else {
+      result({ type: "not_found" }, null);
+    }
   });
 };
 
