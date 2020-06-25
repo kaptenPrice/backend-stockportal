@@ -65,11 +65,7 @@ Customer.updateUserInfo = (id_token, userSettings, result) => {
 
 Customer.create = (newUser, result) => {
   bcrypt.hash(newUser.password, SALT_ROUNDS, (err, hash) => {
-    const objUser = [
-      newUser.email,
-      hash
-    ];
-    sql.query("INSERT INTO users(email, password) VALUES($1,$2)", [newUser.email, hash], (err, res) => {
+    sql.query("INSERT INTO users(email, password, secretword) VALUES($1,$2,$3)", [newUser.email, hash, newUser.secretword], (err, res) => {
       if (err) {
         console.log("error", err);
         result(err, null);
@@ -174,6 +170,33 @@ Customer.getProfileInfo = (id_token, result) => {
   });
 };
 
+Customer.addPreference  = (id_token, catid, result) => {
+  const userId = deCodeIdToken(id_token);
+
+  sql.query(`INSERT INTO public.userprefs(catid, userid) VALUES('${catid}','${userId}')`, (err, res) => {
+    if (err) {
+      console.log("error: Something went wrong ", err);
+      result(err, null);
+    }
+    else {
+      result(null, { sucess: true });
+    }
+  });
+};
+
+Customer.deletePreference  = (id_token, catid, result) => {
+  const userId = deCodeIdToken(id_token);
+
+  sql.query(`DELETE FROM public.userprefs WHERE catid='${catid}' AND userid='${userId}'`, (err, res) => {
+    if (err) {
+      console.log("error: Something went wrong ", err);
+      result(err, null);
+    }
+    else {
+      result(null, { sucess: true });
+    }
+  });
+};
 
 Customer.getPreferencesInfo = (id_token, result) => {
   const userId = deCodeIdToken(id_token);
@@ -191,6 +214,18 @@ Customer.getPreferencesInfo = (id_token, result) => {
       result(null, null);
     }
     
+  });
+};
+
+Customer.delete = (id_token, result) => {
+  const userId = deCodeIdToken(id_token);
+  sql.query(`DELETE FROM PUBLIC.users WHERE userid = '${userId}'`, (err, res) => {
+    if (err) {
+      console.log("error", err);
+      result(err, null);
+      return;
+    }
+    result(null, { sucess: true });
   });
 };
 

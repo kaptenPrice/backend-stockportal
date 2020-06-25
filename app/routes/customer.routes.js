@@ -11,6 +11,10 @@ module.exports = (app) => {
   app.post("/login", customers.login);
   app.post("/getProfileInfo", customers.getProfileInfo);
   app.post("/getPreferencesInfo", customers.getPreferencesInfo);
+  app.post("/addPreference", customers.addPreference);
+  app.post("/deletePreference", customers.deletePreference);
   app.post("/updateUserInfo", customers.updateUserInfo);
   app.post("/updatePassword", customers.updatePassword);
+  app.post("/delete", customers.delete);
+
 };

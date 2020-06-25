@@ -51,6 +51,7 @@ exports.create = (req, res) => {
   const user = new Customer({
     email: req.body.email,
     password: req.body.password,
+    secretword: req.body.secretword
   });
 
   console.log(res.body)
@@ -106,7 +107,6 @@ exports.updateUserInfo = (req, res) => {
   });
 };
 
-
 exports.updatePassword = (req, res) => {
   if (!req.body) {
     res.status(400).send({
@@ -144,8 +144,6 @@ exports.updatePassword = (req, res) => {
     }
   });
 };
-
-
 
 exports.login = (req, res) => {
   const user = new Customer({
@@ -188,6 +186,93 @@ exports.getPreferencesInfo = (req, res) => {
     if (err) {
       res.status(500).send({
         message: "Error when fetching preferences...",
+      });
+    } else {
+      res.send(data);
+    }
+  });
+};
+
+exports.addPreference  = (req, res) => {
+  console.log(req.body.id_token + " is the token");
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!",
+    });
+    return;
+  }
+  if (!req.body.id_token) {
+    res.status(400).send({
+      message: "Token can not be empty!",
+    });
+    return;
+  }
+  if (!req.body.catid) {
+    res.status(400).send({
+      message: "cat id can not be empty!",
+    });
+    return;
+  }
+  Customer.addPreference(req.body.id_token, req.body.catid, (err, data) => {
+    if (err) {
+      res.status(500).send({
+        message: "Error when adding preference...",
+      });
+    } else {
+      res.send(data);
+    }
+  });
+};
+
+exports.deletePreference = (req, res) => {
+  console.log(req.body.id_token + " is the token");
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!",
+    });
+    return;
+  }
+  if (!req.body.id_token) {
+    res.status(400).send({
+      message: "Token can not be empty!",
+    });
+    return;
+  }
+  if (!req.body.catid) {
+    res.status(400).send({
+      message: "cat id can not be empty!",
+    });
+    return;
+  }
+  Customer.deletePreference(req.body.id_token, req.body.catid, (err, data) => {
+    if (err) {
+      res.status(500).send({
+        message: "Error when deleting preference...",
+      });
+    } else {
+      res.send(data);
+    }
+  });
+};
+
+exports.delete = (req, res) => {
+  console.log(req.body.id_token + " is the token");
+  if (!req.body) {
+    res.status(400).send({
+      message: "Content can not be empty!",
+    });
+    return;
+  }
+  if (!req.body.id_token) {
+    res.status(400).send({
+      message: "Token can not be empty!",
+    });
+    return;
+  }
+  Customer.delete(req.body.id_token, (err, data) => {
+    if (err) {
+      res.status(500).send({
+        message: "Error when deleting account...",
       });
     } else {
       res.send(data);
