@@ -58,6 +58,13 @@ exports.create = (req, res) => {
 
   Customer.create(user, (err, data) => {
     if (err) {
+      if (err.message.includes("duplicate key value")) {
+        res.status(500).send({
+          message: "This email already exists",
+        });
+        return;
+      }
+
       res.status(500).send({
         message: err.message || "Some occur while creating a user",
       });
