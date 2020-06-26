@@ -38,11 +38,16 @@ Customer.getAll = (result) => {
 
 Customer.updateUserInfo = (id_token, userSettings, result) => {
 
+  let socCrypted = '';
+  bcrypt.hash(userSettings.socnumber, SALT_ROUNDS, (err, socHash) => {
+    socCrypted = socHash;
+  });
+
   const userObject = [
     userSettings.firstname,
     userSettings.lastname,
     userSettings.email,
-    userSettings.socnumber,
+    socCrypted,
     userSettings.adress,
     userSettings.zipcode,
     userSettings.city,
