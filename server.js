@@ -4,19 +4,20 @@ const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3001;
 //const userdb = require('./user-queries');
 //const portfoliodb = require('./portfolio-queries');
-//const fileUpload = require("express-fileupload");
-//const cors=require('cors');
+const fileUpload = require("express-fileupload");
+const cors=require('cors');
 const app = express();
 //const pool = require('./connection-pool');
+const {deCodeIdToken} = require("../utility");
 
 
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-/*app.use(fileUpload({
+app.use(fileUpload({
   createParentPath: true
 }));
-app.use(cors()); */
+app.use(cors()); 
 
 /*app.get('/', (request, response) => {
   response.json({ info: 'Node.js, Express, and Postgres API' })
@@ -25,9 +26,9 @@ app.get('/users',userdb.getUsers);
 app.get('/users/:id',userdb.getUserById);
 app.post('/newuser',userdb.createUser);
 app.put('/update-users/:id',userdb.updateUser);
-
-app.put('/upload-image/:id',async(req,res)=>{
-  const id = parseInt(req.params.id);
+*/
+app.put('/upload-image',async(req,res)=>{
+  const userid = deCodeIdToken(req.body.id_token);
 
 try{
   if(!req.files ){
@@ -39,7 +40,7 @@ try{
   }else{
     let profileImage = req.files.profilpic; //profilpic är namnet på inputField
 
-    profileImage.mv(`./images/${id}`+profileImage.name);
+    profileImage.mv(`./images/${userid}`+profileImage.name);
     res.send({
       status: true,
       message: 'File is uploaded',
