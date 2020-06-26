@@ -4,7 +4,7 @@
 module.exports = {
   HOST: "localhost",
   USER: "postgres",
-  PASSWORD: "hej123",
-  DB: "postgres",
+  PASSWORD: "1234",
+  DB: "stockportal",
   PORT:"5432",
 };
