@@ -9,6 +9,7 @@ const cors = require('cors');
 const app = express();
 const pool = require('./connection-pool');
 
+const {deCodeIdToken} = require("../utility");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -27,6 +28,7 @@ app.post('/newuser', userdb.createUser);
 app.put('/update-users/:id', userdb.updateUser);
 
 app.post('/upload-image/:id', async (req, res) => {
+
   const id = parseInt(req.params.id);
 
   try {
@@ -39,14 +41,10 @@ app.post('/upload-image/:id', async (req, res) => {
     } else {
       let profileImage = req.files.profilpic; //profilpic är namnet på inputField
 
-      profileImage.mv(`./uploads/${id}` + profileImage.name);
+      profileImage.mv(`./uploads/${id}.`+profileImage.mimetype.replace("image/",""));
       res.send({
         status: true,
         message: 'File is uploaded',
-        data: {
-          name: profileImage.name,
-        }
-
       });
       //TODO orsakar: Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client 
       //Tar bort koden då det inte är viktigt att vi har info om users image name i db
