@@ -245,7 +245,7 @@ Customer.deletePreference  = (id_token, catid, result) => {
 Customer.getPreferencesInfo = (id_token, result) => {
   const userId = deCodeIdToken(id_token);
 
-  sql.query(`SELECT categories.catname FROM userprefs JOIN categories ON userprefs.catid=categories.catid WHERE userid = '${userId}'`, (err, res) => {
+  sql.query(`SELECT categories.catname, categories.color FROM userprefs JOIN categories ON userprefs.catid=categories.catid WHERE userid = '${userId}'`, (err, res) => {
     if (err) {
       console.log("error: Something went wrong ", err);
       result(err, null);
