@@ -1,4 +1,3 @@
-
 const express = require("express");
 const bodyParser = require("body-parser");
 const PORT = process.env.PORT || 3001;
@@ -8,7 +7,7 @@ const fileUpload = require("express-fileupload");
 const cors = require('cors');
 const app = express();
 
-const {deCodeIdToken} = require("../utility");
+const {deCodeIdToken} = require("./app/utility");
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -17,7 +16,7 @@ app.use(fileUpload({
   createParentPath: true
 }));
 
-app.put('/upload-image',async(req,res)=>{
+app.post('/upload-image/',async(req,res)=>{
   const userid = deCodeIdToken(req.body.id_token);
 
   try {
@@ -28,9 +27,9 @@ app.put('/upload-image',async(req,res)=>{
         message: 'No file upload'
       });
     } else {
-      let profileImage = req.files.profilpic; //profilpic är namnet på inputField
+      let profileImage = req.files.profilepic; //profilpic är namnet på inputField
 
-      profileImage.mv(`./uploads/${id}.`+profileImage.mimetype.replace("image/",""));
+      profileImage.mv(`./uploads/${userid}.`+profileImage.mimetype.replace("image/",""));
       res.send({
         status: true,
         message: 'File is uploaded',
@@ -43,6 +42,7 @@ app.put('/upload-image',async(req,res)=>{
 });
 
 app.get('/portfolio', portfoliodb.getPortfolio);
+
 require("./app/routes/customer.routes")(app);
 
 app.listen(PORT, () => {
