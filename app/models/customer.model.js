@@ -253,7 +253,7 @@ Customer.getPreferencesInfo = (id_token, result) => {
       result(null, res.rows);
     }
     else {
-      result(null, null);
+      result(null, {});
     }
     
   });
