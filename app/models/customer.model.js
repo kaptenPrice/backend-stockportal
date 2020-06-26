@@ -40,31 +40,30 @@ Customer.updateUserInfo = (id_token, userSettings, result) => {
 
   let socCrypted = '';
   bcrypt.hash(userSettings.socnumber, SALT_ROUNDS, (err, socHash) => {
-    socCrypted = socHash;
-  });
 
-  const userObject = [
-    userSettings.firstname,
-    userSettings.lastname,
-    userSettings.email,
-    socCrypted,
-    userSettings.adress,
-    userSettings.zipcode,
-    userSettings.city,
-    userSettings.phone,
-    userSettings.imageurl,
-    deCodeIdToken(id_token)
-  ];
+    const userObject = [
+      userSettings.firstname,
+      userSettings.lastname,
+      userSettings.email,
+      socHash,
+      userSettings.adress,
+      userSettings.zipcode,
+      userSettings.city,
+      userSettings.phone,
+      userSettings.imageurl,
+      deCodeIdToken(id_token)
+    ];
 
-  sql.query('UPDATE users SET firstname = $1, lastname= $2, email = $3, socnumber = $4, adress = $5, zipcode = $6, city=$7, phone=$8, imageurl=$9 WHERE userid=$10', userObject, (err, res) => {
-    if (err) {
-      console.log("error", err);
-      result(err, null);
-      return;
-    }
+    sql.query('UPDATE users SET firstname = $1, lastname= $2, email = $3, socnumber = $4, adress = $5, zipcode = $6, city=$7, phone=$8, imageurl=$9 WHERE userid=$10', userObject, (err, res) => {
+      if (err) {
+        console.log("error", err);
+        result(err, null);
+        return;
+      }
 
-    console.log("updated user");
-    result(null, { sucess: true });
+      console.log("updated user");
+      result(null, { sucess: true });
+    });
   });
 };
 
