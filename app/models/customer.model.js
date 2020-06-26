@@ -68,7 +68,7 @@ Customer.updateUserInfo = (id_token, userSettings, result) => {
 Customer.create = (newUser, result) => {
   bcrypt.hash(newUser.password, SALT_ROUNDS, (err, passHash) => {
     bcrypt.hash(newUser.secretword, SALT_ROUNDS, (err, secretHash) => {
-      sql.query(`INSERT INTO users(email, password, secretword) VALUES(${newUser.email},${passHash},${secretHash})`, (err, res) => {
+      sql.query(`INSERT INTO users(email, password, secretword) VALUES('${newUser.email}','${passHash}','${secretHash}')`, (err, res) => {
         if (err) {
           console.log("error", err);
           result(err, null);
