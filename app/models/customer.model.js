@@ -20,7 +20,6 @@ const Customer = function (customer) {
   this.socnumber = customer.socnumber;
   this.password = customer.password;
   this.secretword = customer.secretword;
-  this.imageurl = customer.imageurl;
   this.catname = customer.catname;
 };
 
@@ -50,11 +49,10 @@ Customer.updateUserInfo = (id_token, userSettings, result) => {
       userSettings.zipcode,
       userSettings.city,
       userSettings.phone,
-      userSettings.imageurl,
       deCodeIdToken(id_token)
     ];
 
-    sql.query('UPDATE users SET firstname = $1, lastname= $2, email = $3, socnumber = $4, adress = $5, zipcode = $6, city=$7, phone=$8, imageurl=$9 WHERE userid=$10', userObject, (err, res) => {
+    sql.query('UPDATE users SET firstname = $1, lastname= $2, email = $3, socnumber = $4, adress = $5, zipcode = $6, city=$7, phone=$8 WHERE userid=$9', userObject, (err, res) => {
       if (err) {
         console.log("error", err);
         result(err, null);
@@ -70,7 +68,7 @@ Customer.updateUserInfo = (id_token, userSettings, result) => {
 Customer.create = (newUser, result) => {
   bcrypt.hash(newUser.password, SALT_ROUNDS, (err, passHash) => {
     bcrypt.hash(newUser.secretword, SALT_ROUNDS, (err, secretHash) => {
-      sql.query("INSERT INTO users(email, password, secretword) VALUES($1,$2,$3)", [newUser.email, passHash, secretHash], (err, res) => {
+      sql.query(`INSERT INTO users(email, password, secretword) VALUES(${newUser.email},${passHash},${secretHash})`, (err, res) => {
         if (err) {
           console.log("error", err);
           result(err, null);
@@ -201,7 +199,7 @@ Customer.getProfileInfo = (id_token, result) => {
   const userId = deCodeIdToken(id_token);
   console.log(userId + " is the userid");
 
-  sql.query(`SELECT firstname,lastname,email,adress,zipcode,city,phone,socnumber,imageurl from users WHERE userid = '${userId}'`, (err, res) => {
+  sql.query(`SELECT firstname,lastname,email,adress,zipcode,city,phone,socnumber from users WHERE userid = '${userId}'`, (err, res) => {
     if (err) {
       console.log("error: No user found ", err);
       result(err, null);
@@ -217,7 +215,7 @@ Customer.getProfileInfo = (id_token, result) => {
 Customer.addPreference  = (id_token, catid, result) => {
   const userId = deCodeIdToken(id_token);
 
-  sql.query(`INSERT INTO public.userprefs(catid, userid) VALUES('${catid}','${userId}')`, (err, res) => {
+  sql.query(`INSERT INTO userprefs(catid, userid) VALUES('${catid}','${userId}')`, (err, res) => {
     if (err) {
       console.log("error: Something went wrong ", err);
       result(err, null);
@@ -231,7 +229,7 @@ Customer.addPreference  = (id_token, catid, result) => {
 Customer.deletePreference  = (id_token, catid, result) => {
   const userId = deCodeIdToken(id_token);
 
-  sql.query(`DELETE FROM public.userprefs WHERE catid='${catid}' AND userid='${userId}'`, (err, res) => {
+  sql.query(`DELETE FROM userprefs WHERE catid='${catid}' AND userid='${userId}'`, (err, res) => {
     if (err) {
       console.log("error: Something went wrong ", err);
       result(err, null);
@@ -263,7 +261,7 @@ Customer.getPreferencesInfo = (id_token, result) => {
 
 Customer.delete = (id_token, result) => {
   const userId = deCodeIdToken(id_token);
-  sql.query(`DELETE FROM PUBLIC.users WHERE userid = '${userId}'`, (err, res) => {
+  sql.query(`UPDATE users SET firstname = '', lastname= '', socnumber = '', adress = '', zipcode = '', city='', phone='' WHERE userid = '${userId}'`, (err, res) => {
     if (err) {
       console.log("error", err);
       result(err, null);

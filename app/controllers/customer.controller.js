@@ -98,7 +98,6 @@ exports.updateUserInfo = (req, res) => {
     city : req.body.city,
     phone : req.body.phone,
     socnumber : req.body.socnumber,
-    imageurl : req.body.imageurl,
   });
 
   console.log(res.user)

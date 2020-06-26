@@ -41,7 +41,7 @@ app.post('/upload-image/',async(req,res)=>{
   }
 });
 
-app.get('/portfolio', portfoliodb.getPortfolio);
+app.post('/portfolio', portfoliodb.getPortfolio);
 
 require("./app/routes/customer.routes")(app);
 

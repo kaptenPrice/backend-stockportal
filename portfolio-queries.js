@@ -1,11 +1,19 @@
-const pool = require('./connection-pool');
+const sql = require('./connection-pool');
+const {deCodeIdToken} = require("./app/utility");
 
-const getPortfolio = (request, response) => {
-  pool.query('SELECT * FROM public.portfolio JOIN public.companies ON portfolio.companyid=companies.companyid JOIN categories ON companies.catid=categories.catid', (error, results) => {
+const getPortfolio = (req, response) => {
+  const userid = deCodeIdToken(req.body.id_token);
+  sql.query(`SELECT portfolio.stockvalue, portfolio.stocktype, portfolio.amount, portfolio.stocknumber, portfolio.ownamount, portfolio.votevalue, portfolio.datepurchased, companies.companyname, categories.catname FROM public.portfolio JOIN public.companies ON portfolio.companyid=companies.companyid JOIN categories ON companies.catid=categories.catid WHERE userid = '${userid}'`, (error, results) => {
     if (error) {
-      throw error; 
+      console.log(error)
+      response.status(500).json({message : "Something went wrong when getting portfolio"}); 
     } 
-    response.status(200).json(results.rows); 
+    else if(results.rows.length < 1) {
+      response.status(200).json({}); 
+    }
+    else {
+      response.status(200).json(results.rows);
+    } 
   });
 };
 
