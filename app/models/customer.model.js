@@ -38,28 +38,32 @@ Customer.getAll = (result) => {
 
 Customer.updateUserInfo = (id_token, userSettings, result) => {
 
-  const userObject = [
-    userSettings.firstname,
-    userSettings.lastname,
-    userSettings.email,
-    userSettings.socnumber,
-    userSettings.adress,
-    userSettings.zipcode,
-    userSettings.city,
-    userSettings.phone,
-    userSettings.imageurl,
-    deCodeIdToken(id_token)
-  ];
+  let socCrypted = '';
+  bcrypt.hash(userSettings.socnumber, SALT_ROUNDS, (err, socHash) => {
 
-  sql.query('UPDATE users SET firstname = $1, lastname= $2, email = $3, socnumber = $4, adress = $5, zipcode = $6, city=$7, phone=$8, imageurl=$9 WHERE userid=$10', userObject, (err, res) => {
-    if (err) {
-      console.log("error", err);
-      result(err, null);
-      return;
-    }
+    const userObject = [
+      userSettings.firstname,
+      userSettings.lastname,
+      userSettings.email,
+      socHash,
+      userSettings.adress,
+      userSettings.zipcode,
+      userSettings.city,
+      userSettings.phone,
+      userSettings.imageurl,
+      deCodeIdToken(id_token)
+    ];
 
-    console.log("updated user");
-    result(null, { sucess: true });
+    sql.query('UPDATE users SET firstname = $1, lastname= $2, email = $3, socnumber = $4, adress = $5, zipcode = $6, city=$7, phone=$8, imageurl=$9 WHERE userid=$10', userObject, (err, res) => {
+      if (err) {
+        console.log("error", err);
+        result(err, null);
+        return;
+      }
+
+      console.log("updated user");
+      result(null, { sucess: true });
+    });
   });
 };
 
