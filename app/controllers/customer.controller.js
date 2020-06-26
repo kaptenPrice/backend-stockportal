@@ -142,9 +142,17 @@ exports.updatePassword = (req, res) => {
 
   Customer.updatePassword(id_token, new_password, old_password, (err, data) => {
     if (err) {
+      if(err.type == "incorrect_password") 
+      {
+        res.status(500).send({
+          message: err.message || "Ditt lösen är fel.",
+        });
+        return;
+      }
       res.status(500).send({
         message: err.message || "Some occur while changing password",
       });
+      
     } else {
       res.send(data);
     }
