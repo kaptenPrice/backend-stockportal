@@ -21,23 +21,12 @@ const Customer = function (customer) {
   this.password = customer.password;
   this.secretword = customer.secretword;
   this.catname = customer.catname;
+  this.imgname = customer.imgname;
 };
 
-Customer.getAll = (result) => {
-  sql.query("SELECT * FROM users", (err, res) => {
-    if (err) {
-      console.log("Error", err);
-      result(null, err);
-      return;
-    }
-    console.log("customers", res);
-    result(null, res);
-  });
-};
 
 Customer.updateUserInfo = (id_token, userSettings, result) => {
 
-  let socCrypted = '';
   bcrypt.hash(userSettings.socnumber, SALT_ROUNDS, (err, socHash) => {
 
     const userObject = [
@@ -199,7 +188,7 @@ Customer.getProfileInfo = (id_token, result) => {
   const userId = deCodeIdToken(id_token);
   console.log(userId + " is the userid");
 
-  sql.query(`SELECT firstname,lastname,email,adress,zipcode,city,phone,socnumber from users WHERE userid = '${userId}'`, (err, res) => {
+  sql.query(`SELECT firstname,lastname,email,adress,zipcode,city,phone,socnumber,imgname from users WHERE userid = '${userId}'`, (err, res) => {
     if (err) {
       console.log("error: No user found ", err);
       result(err, null);
